@@ -20,7 +20,7 @@ public class CodeDialog extends Reader {
                 return -1;
             else {
                 print(in);
-                buffer = in + "\n";  
+                buffer = in + "\n";
                 pos = 0;
             }
         }
@@ -33,20 +33,27 @@ public class CodeDialog extends Reader {
             buffer = null;
         return size;
     }
-    protected void print(String s) { System.out.println(s); }
-    public void close() throws IOException {}
+
+    protected void print(String s) {
+        System.out.println(s);
+    }
+
+    public void close() throws IOException {
+    }
+
     protected String showDialog() {
         JTextArea area = new JTextArea(20, 40);
         JScrollPane pane = new JScrollPane(area);
         int result = JOptionPane.showOptionDialog(null, pane, "Input",
-                                                  JOptionPane.OK_CANCEL_OPTION,
-                                                  JOptionPane.PLAIN_MESSAGE,
-                                                  null, null, null);
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
         if (result == JOptionPane.OK_OPTION)
             return area.getText();
         else
             return null;
     }
+
     public static Reader file() throws FileNotFoundException {
         JFileChooser chooser = new JFileChooser();
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)

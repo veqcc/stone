@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 
 public class Lexer {
     public static String regexPat
-        = "\\s*((//.*)|([0-9]+)|(\"(\\\\\"|\\\\\\\\|\\\\n|[^\"])*\")"
-          + "|[A-Z_a-z][A-Z_a-z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct})?";
+            = "\\s*((//.*)|([0-9]+)|(\"(\\\\\"|\\\\\\\\|\\\\n|[^\"])*\")"
+            + "|[A-Z_a-z][A-Z_a-z0-9]*|==|<=|>=|&&|\\|\\||\\p{Punct})?";
     private Pattern pattern = Pattern.compile(regexPat);
     private ArrayList<Token> queue = new ArrayList<Token>();
     private boolean hasMore;
@@ -19,18 +19,21 @@ public class Lexer {
         hasMore = true;
         reader = new LineNumberReader(r);
     }
+
     public Token read() throws ParseException {
         if (fillQueue(0))
             return queue.remove(0);
         else
             return Token.EOF;
     }
+
     public Token peek(int i) throws ParseException {
         if (fillQueue(i))
             return queue.get(i);
         else
-            return Token.EOF; 
+            return Token.EOF;
     }
+
     private boolean fillQueue(int i) throws ParseException {
         while (i >= queue.size())
             if (hasMore)
@@ -39,6 +42,7 @@ public class Lexer {
                 return false;
         return true;
     }
+
     protected void readLine() throws ParseException {
         String line;
         try {
@@ -60,12 +64,12 @@ public class Lexer {
             if (matcher.lookingAt()) {
                 addToken(lineNo, matcher);
                 pos = matcher.end();
-            }
-            else
+            } else
                 throw new ParseException("bad token at line " + lineNo);
         }
         queue.add(new IdToken(lineNo, Token.EOL));
     }
+
     protected void addToken(int lineNo, Matcher matcher) {
         String m = matcher.group(1);
         if (m != null) // if not a space
@@ -80,6 +84,7 @@ public class Lexer {
                 queue.add(token);
             }
     }
+
     protected String toStringLiteral(String s) {
         StringBuilder sb = new StringBuilder();
         int len = s.length() - 1;
@@ -106,28 +111,51 @@ public class Lexer {
             super(line);
             value = v;
         }
-        public boolean isNumber() { return true; }
-        public String getText() { return Integer.toString(value); }
-        public int getNumber() { return value; }
+
+        public boolean isNumber() {
+            return true;
+        }
+
+        public String getText() {
+            return Integer.toString(value);
+        }
+
+        public int getNumber() {
+            return value;
+        }
     }
 
     protected static class IdToken extends Token {
-        private String text; 
+        private String text;
+
         protected IdToken(int line, String id) {
             super(line);
             text = id;
         }
-        public boolean isIdentifier() { return true; }
-        public String getText() { return text; }
+
+        public boolean isIdentifier() {
+            return true;
+        }
+
+        public String getText() {
+            return text;
+        }
     }
 
     protected static class StrToken extends Token {
         private String literal;
+
         StrToken(int line, String str) {
             super(line);
             literal = str;
         }
-        public boolean isString() { return true; }
-        public String getText() { return literal; }
+
+        public boolean isString() {
+            return true;
+        }
+
+        public String getText() {
+            return literal;
+        }
     }
 }
