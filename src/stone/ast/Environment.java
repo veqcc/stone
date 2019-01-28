@@ -1,4 +1,4 @@
-package chap6;
+package stone.ast;
 
 public interface Environment {
     void put(String name, Object value);

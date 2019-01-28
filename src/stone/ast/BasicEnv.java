@@ -1,4 +1,4 @@
-package chap6;
+package stone.ast;
 import java.util.HashMap;
 
 public class BasicEnv implements Environment {

@@ -1,5 +1,7 @@
 package chap6;
 import stone.*;
+import stone.ast.BasicEnv;
+import stone.ast.Environment;
 import stone.ast.ASTree;
 import stone.ast.NullStmnt;
 
@@ -13,7 +15,7 @@ public class BasicInterpreter {
         while (lexer.peek(0) != Token.EOF) {
             ASTree t = bp.parse(lexer);
             if (!(t instanceof NullStmnt)) {
-                Object r = ((BasicEvaluator.ASTreeEx) t).eval(env);
+                Object r = t.eval(env);
                 System.out.println("=> " + r);
             }
         }
