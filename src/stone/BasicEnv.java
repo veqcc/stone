@@ -15,4 +15,16 @@ public class BasicEnv implements Environment {
     public Object get(String name) {
         return values.get(name);
     }
+
+    public void putNew(String name, Object value) {
+        //
+    }
+
+    public Environment where(String name) {
+        return this;
+    }
+
+    public void setOuter(Environment e) {
+        // なぜかこれを入れないとコンパイルエラー。
+    }
 }
