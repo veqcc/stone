@@ -1,6 +1,7 @@
 package stone.ast;
-import stone.StoneException;
 
+import stone.Environment;
+import stone.StoneException;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {

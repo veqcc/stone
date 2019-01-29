@@ -1,4 +1,6 @@
 package stone.ast;
+
+import stone.Environment;
 import stone.Token;
 
 public class NumberLiteral extends ASTLeaf {

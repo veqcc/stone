@@ -1,4 +1,6 @@
 package stone.ast;
+
+import stone.Environment;
 import java.util.List;
 
 public class WhileStmnt extends ASTList {

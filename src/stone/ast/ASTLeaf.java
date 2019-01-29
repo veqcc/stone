@@ -1,6 +1,7 @@
 package stone.ast;
 import java.util.Iterator;
 import java.util.ArrayList;
+import stone.Environment;
 import stone.StoneException;
 import stone.Token;
 

@@ -1,7 +1,5 @@
-package chap6;
-import stone.*;
-import stone.ast.BasicEnv;
-import stone.ast.Environment;
+package stone;
+
 import stone.ast.ASTree;
 import stone.ast.NullStmnt;
 
