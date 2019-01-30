@@ -38,11 +38,22 @@ public class BinaryExpr extends ASTList {
         ASTree le = left();
         if (le instanceof PrimaryExpr) {
             PrimaryExpr p = (PrimaryExpr) le;
+            Object t = p.evalSubExpr(env, 1);
+
             if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
-                Object t = p.evalSubExpr(env, 1);
                 if (t instanceof StoneObject) {
                     return setField((StoneObject) t, (Dot) p.postfix(0), rvalue);
                 }
+            } else if (p.hasPostfix(0) && p.postfix(0) instanceof ArrayRef) {
+                if (t instanceof Object[]) {
+                    ArrayRef aref = (ArrayRef) p.postfix(0);
+                    Object index = aref.index().eval(env);
+                    if (index instanceof Integer) {
+                        ((Object[]) t)[(Integer) index] = rvalue;
+                        return rvalue;
+                    }
+                }
+                throw new StoneException("bad array access", this);
             }
         } else if (le instanceof Name) {
             env.put(((Name) le).name(), rvalue);
