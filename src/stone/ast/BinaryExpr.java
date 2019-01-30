@@ -2,6 +2,7 @@ package stone.ast;
 
 import stone.Environment;
 import stone.StoneException;
+import stone.StoneObject;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -34,12 +35,21 @@ public class BinaryExpr extends ASTList {
     }
 
     protected Object computeAssign(Environment env, Object rvalue) {
-        ASTree l = left();
-        if (l instanceof Name) {
-            env.put(((Name) l).name(), rvalue);
+        ASTree le = left();
+        if (le instanceof PrimaryExpr) {
+            PrimaryExpr p = (PrimaryExpr) le;
+            if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
+                Object t = p.evalSubExpr(env, 1);
+                if (t instanceof StoneObject) {
+                    return setField((StoneObject) t, (Dot) p.postfix(0), rvalue);
+                }
+            }
+        } else if (le instanceof Name) {
+            env.put(((Name) le).name(), rvalue);
             return rvalue;
-        } else
-            throw new StoneException("bad assignment", this);
+        }
+
+        throw new StoneException("bad assignment", this);
     }
 
     protected Object computeOp(Object left, String op, Object right) {
@@ -77,5 +87,15 @@ public class BinaryExpr extends ASTList {
             return a < b ? 1 : 0;
         else
             throw new StoneException("bad operator", this);
+    }
+
+    protected Object setField(StoneObject obj, Dot expr, Object rvalue) {
+        String name = expr.name();
+        try {
+            obj.write(name, rvalue);
+            return rvalue;
+        } catch (StoneObject.AccessException e) {
+            throw new StoneException("bad member access " + location() + ": " + name);
+        }
     }
 }
