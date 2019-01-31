@@ -1,10 +1,6 @@
 package stone.ast;
 
-import stone.StoneException;
-import stone.Environment;
-import stone.NestedEnv;
-import stone.ClassInfo;
-import stone.StoneObject;
+import stone.*;
 import java.util.List;
 
 public class Dot extends Postfix {
@@ -20,29 +16,34 @@ public class Dot extends Postfix {
         return "." + name();
     }
 
-    public Object eval(Environment env, Object value) {
-        String member = name();
-        if (value instanceof ClassInfo) {
-            if ("new".equals(member)) {
-                ClassInfo ci = (ClassInfo) value;
-                NestedEnv e = new NestedEnv(ci.environment());
-                StoneObject so = new StoneObject(e);
-                e.putNew("this", so);
-                initObject(ci, e);
-                return so;
-            }
-        } else if (value instanceof StoneObject) {
-            try {
-                return ((StoneObject) value).read(member);
-            } catch (StoneObject.AccessException e) {
-            }
-        }
-        throw new StoneException("bad member access: " + member, this);
-    }
-
     protected void initObject(ClassInfo ci, Environment env) {
         if (ci.superClass() != null) {
             initObject(ci.superClass(), env);
+        }
+        ci.body().eval(env);
+    }
+    public Object eval(Environment env, Object value) {
+        String member = name();
+        if (value instanceof OptClassInfo) {
+            if ("new".equals(member)) {
+                OptClassInfo ci = (OptClassInfo)value;
+                ArrayEnv newEnv = new ArrayEnv(1, ci.environment());
+                OptStoneObject so = new OptStoneObject(ci, ci.size());
+                newEnv.put(0, 0, so);
+                initObject(ci, so, newEnv);
+                return so;
+            }
+        }
+        else if (value instanceof OptStoneObject) {
+            try {
+                return ((OptStoneObject)value).read(member);
+            } catch (OptStoneObject.AccessException e) {}
+        }
+        throw new StoneException("bad member access: " + member, this);
+    }
+    protected void initObject(OptClassInfo ci, OptStoneObject obj, Environment env) {
+        if (ci.superClass() != null) {
+            initObject(ci.superClass(), obj, env);
         }
         ci.body().eval(env);
     }

@@ -1,7 +1,11 @@
 package stone.ast;
 
 import stone.Environment;
-import stone.ClassInfo;
+import stone.MemberSymbols;
+import stone.Symbols;
+import stone.OptClassInfo;
+import stone.SymbolThis;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassStmnt extends ASTList {
@@ -33,9 +37,22 @@ public class ClassStmnt extends ASTList {
         return "(class " + name() + " " + parent + " " + body() + ")";
     }
 
+    public void lookup(Symbols syms) {
+    }
+
     public Object eval(Environment env) {
-        ClassInfo ci = new ClassInfo(this, env);
+        Symbols methodNames = new MemberSymbols(env.symbols(), MemberSymbols.METHOD);
+        Symbols fieldNames = new MemberSymbols(methodNames, MemberSymbols.FIELD);
+        OptClassInfo ci = new OptClassInfo(this, env, methodNames, fieldNames);
         env.put(name(), ci);
+        ArrayList<DefStmnt> methods = new ArrayList<DefStmnt>();
+        if (ci.superClass() != null) {
+            ci.superClass().copyTo(fieldNames, methodNames, methods);
+        }
+
+        Symbols newSyms = new SymbolThis(fieldNames);
+        body().lookup(newSyms, methodNames, fieldNames, methods);
+        ci.setMethods(methods);
         return name();
     }
 }

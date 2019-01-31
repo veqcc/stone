@@ -1,14 +1,21 @@
-package chap12;
+package stone;
 
 public class OptStoneObject {
-    public static class AccessException extends Exception {}
+    public static class AccessException extends Exception {
+    }
+
     protected OptClassInfo classInfo;
     protected Object[] fields;
+
     public OptStoneObject(OptClassInfo ci, int size) {
         classInfo = ci;
         fields = new Object[size];
     }
-    public OptClassInfo classInfo() { return classInfo; }
+
+    public OptClassInfo classInfo() {
+        return classInfo;
+    }
+
     public Object read(String name) throws AccessException {
         Integer i = classInfo.fieldIndex(name);
         if (i != null)
@@ -20,6 +27,7 @@ public class OptStoneObject {
         }
         throw new AccessException();
     }
+
     public void write(String name, Object value) throws AccessException {
         Integer i = classInfo.fieldIndex(name);
         if (i == null)
@@ -27,12 +35,15 @@ public class OptStoneObject {
         else
             fields[i] = value;
     }
+
     public Object read(int index) {
         return fields[index];
     }
+
     public void write(int index, Object value) {
         fields[index] = value;
     }
+
     public Object method(int index) {
         return classInfo.method(this, index);
     }

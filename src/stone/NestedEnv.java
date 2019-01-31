@@ -10,6 +10,10 @@ public class NestedEnv implements Environment {
         this(null);
     }
 
+    public Symbols symbols() {
+        throw new StoneException("no symbols");
+    }
+
     public NestedEnv(Environment e) {
         values = new HashMap<String, Object>();
         outer = e;

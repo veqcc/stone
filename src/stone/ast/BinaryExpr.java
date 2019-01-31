@@ -4,6 +4,7 @@ import stone.Environment;
 import stone.StoneException;
 import stone.StoneObject;
 import stone.Symbols;
+import stone.OptStoneObject;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -86,7 +87,7 @@ public class BinaryExpr extends ASTList {
         ASTree left = left();
         if ("=".equals(operator())) {
             if (left instanceof Name) {
-                ((Name)left).lookupForAssign(syms);
+                ((Name) left).lookupForAssign(syms);
                 right().lookup(syms);
                 return;
             }
@@ -98,28 +99,26 @@ public class BinaryExpr extends ASTList {
     protected Object computeAssign(Environment env, Object rvalue) {
         ASTree le = left();
         if (le instanceof Name) {
-            ((Name)le).evalForAssign(env, rvalue);
+            ((Name) le).evalForAssign(env, rvalue);
             return rvalue;
         } else if (le instanceof PrimaryExpr) {
             PrimaryExpr p = (PrimaryExpr) le;
-            Object t = p.evalSubExpr(env, 1);
-
             if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
-                if (t instanceof StoneObject) {
-                    return setField((StoneObject) t, (Dot) p.postfix(0), rvalue);
-                }
-            } else if (p.hasPostfix(0) && p.postfix(0) instanceof ArrayRef) {
-                if (t instanceof Object[]) {
-                    ArrayRef aref = (ArrayRef) p.postfix(0);
-                    Object index = aref.index().eval(env);
-                    if (index instanceof Integer) {
-                        ((Object[]) t)[(Integer) index] = rvalue;
-                        return rvalue;
-                    }
-                }
-                throw new StoneException("bad array access", this);
+                Object t = p.evalSubExpr(env, 1);
+                if (t instanceof OptStoneObject)
+                    return setField((OptStoneObject) t, (Dot) p.postfix(0), rvalue);
             }
         }
         throw new StoneException("bad assignment", this);
+    }
+
+    protected Object setField(OptStoneObject obj, Dot expr, Object rvalue) {
+        String name = expr.name();
+        try {
+            obj.write(name, rvalue);
+            return rvalue;
+        } catch (OptStoneObject.AccessException e) {
+            throw new StoneException("bad member access: " + name, this);
+        }
     }
 }
