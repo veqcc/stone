@@ -31,6 +31,12 @@ public class NestedEnv implements Environment {
             return v;
     }
 
+    public Object get(int nest, int index) {
+        return null;
+    }
+
+    public void put(int nest, int index, Object value) {}
+
     public void putNew(String name, Object value) {
         values.put(name, value);
     }

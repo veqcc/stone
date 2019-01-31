@@ -5,6 +5,7 @@ import stone.StoneException;
 import stone.StoneObject;
 import stone.Symbols;
 import stone.OptStoneObject;
+import stone.OptClassInfo;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -112,13 +113,20 @@ public class BinaryExpr extends ASTList {
         throw new StoneException("bad assignment", this);
     }
 
+    protected OptClassInfo classInfo = null;
+    protected int index;
+
     protected Object setField(OptStoneObject obj, Dot expr, Object rvalue) {
-        String name = expr.name();
-        try {
-            obj.write(name, rvalue);
-            return rvalue;
-        } catch (OptStoneObject.AccessException e) {
-            throw new StoneException("bad member access: " + name, this);
+        if (obj.classInfo() != classInfo) {
+            String member = expr.name();
+            classInfo = obj.classInfo();
+            Integer i = classInfo.fieldIndex(member);
+            if (i == null) {
+                throw new StoneException("bad member access: " + member, this);
+            }
+            index = i;
         }
+        obj.write(index, rvalue);
+        return rvalue;
     }
 }
