@@ -2,6 +2,8 @@ package stone.ast;
 
 import stone.Environment;
 import stone.Function;
+import stone.Symbols;
+import stone.OptFunction;
 import java.util.List;
 
 public class DefStmnt extends ASTList {
@@ -25,8 +27,15 @@ public class DefStmnt extends ASTList {
         return "(def " + name() + " " + parameters() + " " + body() + ")";
     }
 
+    protected int index, size;
+
+    public void lookup(Symbols syms) {
+        index = syms.putNew(name());
+        size = Fun.lookup(syms, parameters(), body());
+    }
+
     public Object eval(Environment env) {
-        env.putNew(name(), new Function(parameters(), body(), env));
+        env.put(0, index, new OptFunction(parameters(), body(), env, size));
         return name();
     }
 }

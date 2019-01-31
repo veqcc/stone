@@ -2,6 +2,7 @@ package stone.ast;
 
 import stone.Environment;
 import stone.StoneException;
+import stone.Symbols;
 import java.util.List;
 import java.util.Iterator;
 
@@ -47,5 +48,11 @@ public class ASTList extends ASTree {
 
     public Object eval(Environment env) {
         throw new StoneException("cannot eval: " + toString(), this);
+    }
+
+    public void lookup(Symbols syms) {
+        for (ASTree t : this) {
+            t.lookup(syms);
+        }
     }
 }

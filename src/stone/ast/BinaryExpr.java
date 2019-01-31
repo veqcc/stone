@@ -3,6 +3,7 @@ package stone.ast;
 import stone.Environment;
 import stone.StoneException;
 import stone.StoneObject;
+import stone.Symbols;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -32,35 +33,6 @@ public class BinaryExpr extends ASTList {
             Object right = right().eval(env);
             return computeOp(left, op, right);
         }
-    }
-
-    protected Object computeAssign(Environment env, Object rvalue) {
-        ASTree le = left();
-        if (le instanceof PrimaryExpr) {
-            PrimaryExpr p = (PrimaryExpr) le;
-            Object t = p.evalSubExpr(env, 1);
-
-            if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
-                if (t instanceof StoneObject) {
-                    return setField((StoneObject) t, (Dot) p.postfix(0), rvalue);
-                }
-            } else if (p.hasPostfix(0) && p.postfix(0) instanceof ArrayRef) {
-                if (t instanceof Object[]) {
-                    ArrayRef aref = (ArrayRef) p.postfix(0);
-                    Object index = aref.index().eval(env);
-                    if (index instanceof Integer) {
-                        ((Object[]) t)[(Integer) index] = rvalue;
-                        return rvalue;
-                    }
-                }
-                throw new StoneException("bad array access", this);
-            }
-        } else if (le instanceof Name) {
-            env.put(((Name) le).name(), rvalue);
-            return rvalue;
-        }
-
-        throw new StoneException("bad assignment", this);
     }
 
     protected Object computeOp(Object left, String op, Object right) {
@@ -108,5 +80,46 @@ public class BinaryExpr extends ASTList {
         } catch (StoneObject.AccessException e) {
             throw new StoneException("bad member access " + location() + ": " + name);
         }
+    }
+
+    public void lookup(Symbols syms) {
+        ASTree left = left();
+        if ("=".equals(operator())) {
+            if (left instanceof Name) {
+                ((Name)left).lookupForAssign(syms);
+                right().lookup(syms);
+                return;
+            }
+        }
+        left.lookup(syms);
+        right().lookup(syms);
+    }
+
+    protected Object computeAssign(Environment env, Object rvalue) {
+        ASTree le = left();
+        if (le instanceof Name) {
+            ((Name)le).evalForAssign(env, rvalue);
+            return rvalue;
+        } else if (le instanceof PrimaryExpr) {
+            PrimaryExpr p = (PrimaryExpr) le;
+            Object t = p.evalSubExpr(env, 1);
+
+            if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
+                if (t instanceof StoneObject) {
+                    return setField((StoneObject) t, (Dot) p.postfix(0), rvalue);
+                }
+            } else if (p.hasPostfix(0) && p.postfix(0) instanceof ArrayRef) {
+                if (t instanceof Object[]) {
+                    ArrayRef aref = (ArrayRef) p.postfix(0);
+                    Object index = aref.index().eval(env);
+                    if (index instanceof Integer) {
+                        ((Object[]) t)[(Integer) index] = rvalue;
+                        return rvalue;
+                    }
+                }
+                throw new StoneException("bad array access", this);
+            }
+        }
+        throw new StoneException("bad assignment", this);
     }
 }

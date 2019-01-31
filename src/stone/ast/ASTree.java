@@ -1,6 +1,7 @@
 package stone.ast;
 
 import stone.Environment;
+import stone.Symbols;
 import java.util.Iterator;
 
 public abstract class ASTree implements Iterable<ASTree> {
@@ -17,4 +18,6 @@ public abstract class ASTree implements Iterable<ASTree> {
     public Iterator<ASTree> iterator() {
         return children();
     }
+
+    public void lookup(Symbols syms) {}
 }

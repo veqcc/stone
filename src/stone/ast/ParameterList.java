@@ -1,5 +1,6 @@
 package stone.ast;
 
+import stone.Symbols;
 import stone.Environment;
 import java.util.List;
 
@@ -16,7 +17,16 @@ public class ParameterList extends ASTList {
         return numChildren();
     }
 
+    protected int[] offsets = null;
+
+    public void lookup(Symbols syms) {
+        int s = size();
+        offsets = new int[s];
+        for (int i = 0; i < s; i++)
+            offsets[i] = syms.putNew(name(i));
+    }
+
     public void eval(Environment env, int index, Object value) {
-        env.putNew(name(index), value);
+        env.put(0, offsets[index], value);
     }
 }
