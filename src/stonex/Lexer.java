@@ -28,6 +28,14 @@ public class Lexer {
         }
     }
 
+    public Token peek(int i) throws Exception {
+        if (fillQueue(i)) {
+            return queue.get(i);
+        } else {
+            return Token.EOF;
+        }
+    }
+
     private boolean fillQueue(int i) throws Exception {
         while (i >= queue.size()) {
             if (hasMore) {

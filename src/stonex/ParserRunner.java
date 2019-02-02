@@ -1,20 +1,20 @@
 package stonex;
-
-import java.io.Reader;
+import stonex.ast.ASTree;
 import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import javax.swing.JFileChooser;
 
-public class LexerRunner {
+public class ParserRunner {
     public static void main(String[] args) throws Exception {
         try {
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
             Lexer l = new Lexer(br);
-            for (Token t; (t = l.read()) != Token.EOF; ) {
-                System.out.println("=> " + t.getText());
+            BasicParser bp = new BasicParser();
+            while (l.peek(0) != Token.EOF) {
+                ASTree ast = bp.parse(l);
+                System.out.println("=> " + ast.toString());
             }
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
