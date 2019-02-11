@@ -1,4 +1,5 @@
 package stonex.ast;
+import stonex.Environment;
 import stonex.Token;
 
 public class NumberLiteral extends ASTLeaf {
@@ -8,5 +9,9 @@ public class NumberLiteral extends ASTLeaf {
 
     public int value() {
         return token().getNumber();
+    }
+
+    public Object eval(Environment env) {
+        return value();
     }
 }

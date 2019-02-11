@@ -1,4 +1,6 @@
 package stonex.ast;
+import stonex.Environment;
+
 import java.util.List;
 
 public class IfStmnt extends ASTList {
@@ -20,5 +22,19 @@ public class IfStmnt extends ASTList {
 
     public String toString() {
         return "(if " + condition() + " " + thenBlock() + " else " + elseBlock() + ")";
+    }
+
+    public Object eval(Environment env) throws Exception {
+        Object c = condition().eval(env);
+        if (c instanceof Integer && (Integer)c != 0) {
+            return thenBlock().eval(env);
+        } else {
+            ASTree b = elseBlock();
+            if (b == null) {
+                return 0;
+            } else {
+                return b.eval(env);
+            }
+        }
     }
 }

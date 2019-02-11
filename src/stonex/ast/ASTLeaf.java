@@ -1,6 +1,8 @@
 package stonex.ast;
 import java.util.Iterator;
 import java.util.ArrayList;
+
+import stonex.Environment;
 import stonex.Token;
 
 public class ASTLeaf extends ASTree {
@@ -33,5 +35,9 @@ public class ASTLeaf extends ASTree {
 
     public Token token() {
         return token;
+    }
+
+    public Object eval(Environment env) throws Exception {
+        throw new Exception();
     }
 }

@@ -1,5 +1,5 @@
 package stonex.ast;
-
+import stonex.Environment;
 import java.util.List;
 import java.util.Iterator;
 
@@ -42,5 +42,9 @@ public class ASTList extends ASTree {
             }
         }
         return null;
+    }
+
+    public Object eval(Environment env) throws Exception {
+        throw new Exception();
     }
 }

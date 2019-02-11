@@ -1,4 +1,5 @@
 package stonex.ast;
+import stonex.Environment;
 import stonex.Token;
 
 public class StringLiteral extends ASTLeaf {
@@ -8,5 +9,9 @@ public class StringLiteral extends ASTLeaf {
 
     public String value() {
         return token().getText();
+    }
+
+    public Object eval(Environment env) throws Exception {
+        return value();
     }
 }
