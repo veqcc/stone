@@ -6,4 +6,6 @@ def fib(n) {
   }
 }
 
-fib(10)
+t = currentTime()
+fib(15)
+print currentTime() - t + " msec"

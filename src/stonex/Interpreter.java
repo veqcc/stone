@@ -11,7 +11,7 @@ public class Interpreter {
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
             Lexer l = new Lexer(br);
             BasicParser bp = new BasicParser();
-            Environment env = new Env();
+            Environment env = new Natives().environment(new Env());
             while (l.peek(0) != Token.EOF) {
                 ASTree t = bp.parse(l);
                 if (!(t instanceof NullStmnt)) {
