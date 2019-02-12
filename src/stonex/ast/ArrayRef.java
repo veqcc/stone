@@ -1,7 +1,6 @@
-package stone.ast;
+package stonex.ast;
+import stonex.Environment;
 
-import stone.StoneException;
-import stone.Environment;
 import java.util.List;
 
 public class ArrayRef extends Postfix {
@@ -17,14 +16,13 @@ public class ArrayRef extends Postfix {
         return "[" + index() + "]";
     }
 
-    public Object eval(Environment env, Object value) {
+    public Object eval(Environment env, Object value) throws Exception {
         if (value instanceof Object[]) {
             Object index = index().eval(env);
             if (index instanceof Integer) {
-                return ((Object[]) value)[(Integer) index];
+                return ((Object[])value)[(Integer)index];
             }
         }
-
-        throw new StoneException("bad array access", this);
+        throw new Exception();
     }
 }

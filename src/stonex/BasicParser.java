@@ -25,11 +25,13 @@ public class BasicParser {
     private Parser member = rule().or(def, simple);
     private Parser class_body = rule(ClassBody.class).sep("{").option(member).repeat(rule().sep(",", Token.EOL).option(member)).sep("}");
     private Parser defclass = rule(ClassStmnt.class).sep("class").identifier(reserved).option(rule().sep("extends").identifier(reserved)).ast(class_body);
+    private Parser elements = rule(ArrayLiteral.class).ast(expr).repeat(rule().sep(",").ast(expr));
 
     public BasicParser() {
         reserved.add(";");
         reserved.add("}");
         reserved.add(")");
+        reserved.add("]");
         reserved.add(Token.EOL);
 
         primary.repeat(postfix);
@@ -38,6 +40,9 @@ public class BasicParser {
 
         postfix.insertChoice(rule(Dot.class).sep(".").identifier(reserved));
         program.insertChoice(defclass);
+
+        primary.insertChoice(rule().sep("[").maybe(elements).sep("]"));
+        postfix.insertChoice(rule(ArrayRef.class).sep("[").ast(expr).sep("]"));
 
         operators.add("=", 1, Operators.RIGHT);
         operators.add("==", 2, Operators.LEFT);

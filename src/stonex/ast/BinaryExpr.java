@@ -41,6 +41,17 @@ public class BinaryExpr extends ASTList {
                 if (t instanceof StoneObject) {
                     return setField((StoneObject)t, (Dot)p.postfix(0), rvalue);
                 }
+            } else if (p.hasPostfix(0) && p.postfix(0) instanceof ArrayRef) {
+                Object t = p.evalSubExpr(env, 1);
+                if (t instanceof Object[]) {
+                    ArrayRef aref = (ArrayRef)p.postfix(0);
+                    Object index = aref.index().eval(env);
+                    if (index instanceof Integer) {
+                        ((Object[])t)[(Integer)index] = rvalue;
+                        return rvalue;
+                    }
+                }
+                throw new Exception();
             }
         }
 
