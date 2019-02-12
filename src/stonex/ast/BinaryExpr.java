@@ -1,6 +1,7 @@
 package stonex.ast;
 import stonex.Env;
 import stonex.Environment;
+import stonex.StoneObject;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -33,12 +34,22 @@ public class BinaryExpr extends ASTList {
 
     private Object computeAssign(Environment env, Object rvalue) throws Exception {
         ASTree l = left();
+        if (l instanceof PrimaryExpr) {
+            PrimaryExpr p = (PrimaryExpr)l;
+            if (p.hasPostfix(0) && p.postfix(0) instanceof Dot) {
+                Object t = p.evalSubExpr(env, 1);
+                if (t instanceof StoneObject) {
+                    return setField((StoneObject)t, (Dot)p.postfix(0), rvalue);
+                }
+            }
+        }
+
         if (l instanceof Name) {
             env.put(((Name)l).name(), rvalue);
             return rvalue;
-        } else {
-            throw new Exception();
         }
+
+        throw new Exception();
     }
 
     private Object computeOp(Object left, String op, Object right) throws Exception {
@@ -71,6 +82,16 @@ public class BinaryExpr extends ASTList {
             case ">": return l > r ? 1 : 0;
             case "<": return l < r ? 1 : 0;
             default: throw new Exception();
+        }
+    }
+
+    private Object setField(StoneObject obj, Dot expr, Object rvalue) throws Exception {
+        String name = expr.name();
+        try {
+            obj.write(name, rvalue);
+            return rvalue;
+        } catch (Exception e) {
+            throw e;
         }
     }
 }
