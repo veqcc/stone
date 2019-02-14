@@ -44,6 +44,9 @@ public class BasicParser {
         primary.insertChoice(rule().sep("[").maybe(elements).sep("]"));
         postfix.insertChoice(rule(ArrayRef.class).sep("[").ast(expr).sep("]"));
 
+        // Closure
+        primary.insertChoice(rule(Fun.class).sep("fun").ast(paramList).ast(block));
+
         operators.add("=", 1, Operators.RIGHT);
         operators.add("==", 2, Operators.LEFT);
         operators.add(">", 2, Operators.LEFT);
