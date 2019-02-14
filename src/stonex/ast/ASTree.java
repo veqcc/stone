@@ -1,5 +1,6 @@
 package stonex.ast;
 import stonex.Environment;
+import stonex.Symbols;
 import java.util.Iterator;
 
 public abstract class ASTree implements Iterable<ASTree> {
@@ -15,5 +16,7 @@ public abstract class ASTree implements Iterable<ASTree> {
         return children();
     }
 
-    public abstract Object eval(Environment env) throws Exception ;
+    public abstract Object eval(Environment env) throws Exception;
+
+    public void lookup(Symbols syms) throws Exception {}
 }

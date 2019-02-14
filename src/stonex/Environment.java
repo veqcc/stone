@@ -1,13 +1,17 @@
 package stonex;
 
 public interface Environment {
-    void put(String name, Object value);
+    Symbols symbols() throws Exception;
 
-    Object get(String name);
+    void put(String name, Object value) throws Exception;
 
-    void putNew(String name, Object value);
+    void put(int nest, int index, Object value) throws Exception;
 
-    Environment where(String name);
+    Object get(String name) throws Exception;
 
-    void setOuter(Environment e);
+    Object get(int nest, int index);
+
+    void putNew(String name, Object value) throws Exception;
+
+    Environment where(String name) throws Exception;
 }

@@ -11,10 +11,11 @@ public class Interpreter {
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
             Lexer l = new Lexer(br);
             BasicParser bp = new BasicParser();
-            Environment env = new Natives().environment(new Env());
+            Environment env = new Natives().environment(new ResizableEnv());
             while (l.peek(0) != Token.EOF) {
                 ASTree t = bp.parse(l);
                 if (!(t instanceof NullStmnt)) {
+                    t.lookup(env.symbols());
                     Object r = t.eval(env);
                     System.out.println("=> " + r);
                 }

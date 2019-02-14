@@ -5,12 +5,14 @@ import stonex.ast.ParameterList;
 public class Function {
     private ParameterList parameters;
     private BlockStmnt body;
-    private Environment env;
+    protected Environment env;
+    protected int size;
 
-    public Function(ParameterList parameters, BlockStmnt body, Environment env) {
+    public Function(ParameterList parameters, BlockStmnt body, Environment env, int size) {
         this.parameters = parameters;
         this.body = body;
         this.env = env;
+        this.size = size;
     }
 
     public ParameterList parameters() {
@@ -21,8 +23,8 @@ public class Function {
         return body;
     }
 
-    public Environment makeEnv() {
-        return new Env(env);
+    public Environment makeEnv() throws Exception {
+        return new Env(size, env);
     }
 
     public String toString() {

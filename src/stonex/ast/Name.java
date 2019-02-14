@@ -1,22 +1,60 @@
 package stonex.ast;
-import stonex.Environment;
-import stonex.Token;
+import stonex.*;
 
 public class Name extends ASTLeaf {
+    private static final int UNKNOWN = -1;
+    private int nest, index;
+
     public Name(Token t) {
         super(t);
+        index = UNKNOWN;
     }
 
     public String name() {
         return token().getText();
     }
 
-    public Object eval(Environment env) throws Exception {
-        Object value = env.get(name());
-        if (value == null) {
+    public void lookup(Symbols syms) throws Exception {
+        Symbols.Location loc = syms.get(name());
+        if (loc == null) {
             throw new Exception();
         } else {
-            return value;
+            nest = loc.nest;
+            index = loc.index;
         }
+    }
+
+    public void lookupForAssign(Symbols syms) {
+        Symbols.Location loc = syms.put(name());
+        nest = loc.nest;
+        index = loc.index;
+    }
+
+    public Object eval(Environment env) throws Exception {
+        if (index == UNKNOWN) {
+            return env.get(name());
+        } else if (nest == MemberSymbols.FIELD) {
+            return getThis(env).read(index);
+        } else if (nest == MemberSymbols.METHOD) {
+            return getThis(env).method(index);
+        } else {
+            return env.get(nest, index);
+        }
+    }
+
+    public void evalForAssign(Environment env, Object value) throws Exception {
+        if (index == UNKNOWN) {
+            env.put(name(), value);
+        } else if (nest == MemberSymbols.FIELD) {
+            getThis(env).write(index, value);
+        } else if (nest == MemberSymbols.METHOD) {
+            throw new Exception();
+        } else {
+            env.put(nest, index, value);
+        }
+    }
+
+    private StoneObject getThis(Environment env) {
+        return (StoneObject)env.get(0, 0);
     }
 }

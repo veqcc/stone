@@ -2,6 +2,7 @@ package stonex.ast;
 import stonex.Env;
 import stonex.Environment;
 import stonex.StoneObject;
+import stonex.Symbols;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
@@ -19,6 +20,19 @@ public class BinaryExpr extends ASTList {
 
     public ASTree right() {
         return child(2);
+    }
+
+    public void lookup(Symbols syms) throws Exception {
+        ASTree l = left();
+        if ("=".equals(operator())) {
+            if (l instanceof Name) {
+                ((Name) l).lookupForAssign(syms);
+                right().lookup(syms);
+                return;
+            }
+        }
+        l.lookup(syms);
+        right().lookup(syms);
     }
 
     public Object eval(Environment env) throws Exception {
@@ -56,7 +70,7 @@ public class BinaryExpr extends ASTList {
         }
 
         if (l instanceof Name) {
-            env.put(((Name)l).name(), rvalue);
+            ((Name) l).evalForAssign(env, rvalue);
             return rvalue;
         }
 

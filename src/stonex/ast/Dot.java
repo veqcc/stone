@@ -24,10 +24,10 @@ public class Dot extends Postfix {
         if (value instanceof ClassInfo) {
             if ("new".equals(member)) {
                 ClassInfo ci = (ClassInfo)value;
-                Env e = new Env(ci.environment());
-                StoneObject so = new StoneObject(e);
-                e.putNew("this", so);
-                initObject(ci, e);
+                Env e = new Env(1, ci.environment());
+                StoneObject so = new StoneObject(ci, ci.size());
+                e.put(0, 0, so);
+                initObject(ci, so, e);
                 return so;
             }
         } else if (value instanceof StoneObject) {
@@ -40,9 +40,9 @@ public class Dot extends Postfix {
         throw new Exception();
     }
 
-    private void initObject(ClassInfo ci, Environment env) throws Exception {
+    private void initObject(ClassInfo ci, StoneObject obj, Environment env) throws Exception {
         if (ci.superClass() != null) {
-            initObject(ci.superClass(), env);
+            initObject(ci.superClass(), obj, env);
         }
         ci.body().eval(env);
     }

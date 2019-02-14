@@ -1,5 +1,6 @@
 package stonex.ast;
 import stonex.Environment;
+import stonex.Symbols;
 import java.util.List;
 import java.util.Iterator;
 
@@ -46,5 +47,11 @@ public class ASTList extends ASTree {
 
     public Object eval(Environment env) throws Exception {
         throw new Exception();
+    }
+
+    public void lookup(Symbols syms) throws Exception {
+        for (ASTree t: this) {
+            t.lookup(syms);
+        }
     }
 }

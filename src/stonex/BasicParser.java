@@ -34,13 +34,16 @@ public class BasicParser {
         reserved.add("]");
         reserved.add(Token.EOL);
 
+        // Function
         primary.repeat(postfix);
         simple.option(args);
         program.insertChoice(def);
 
+        // Class
         postfix.insertChoice(rule(Dot.class).sep(".").identifier(reserved));
         program.insertChoice(defclass);
 
+        // Array
         primary.insertChoice(rule().sep("[").maybe(elements).sep("]"));
         postfix.insertChoice(rule(ArrayRef.class).sep("[").ast(expr).sep("]"));
 

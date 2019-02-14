@@ -2,50 +2,60 @@ package stonex;
 import java.util.HashMap;
 
 public class Env implements Environment {
-    private HashMap<String, Object> values;
-    private Environment outer;
+    protected Environment outer;
+    protected Object[] values;
 
-    public Env() {
-        this(null);
+    public Env(int size, Environment env) {
+        values = new Object[size];
+        outer = env;
     }
 
-    public Env(Environment e) {
-        values = new HashMap<String, Object>();
-        outer = e;
+    public Symbols symbols() throws Exception {
+        throw new Exception();
+    }
+
+    public Object get(int nest, int index) {
+        if (nest == 0) {
+            return values[index];
+        } else if (outer == null) {
+            return null;
+        } else {
+            return outer.get(nest - 1, index);
+        }
+    }
+
+    public void put(int nest, int index, Object value) throws Exception {
+        if (nest == 0) {
+            values[index] = value;
+        } else if (outer == null) {
+            throw new Exception();
+        } else {
+            outer.put(nest - 1, index, value);
+        }
+    }
+
+    public Object get(String name) throws Exception {
+        error(name);
+        return null;
+    }
+
+    public void put(String name, Object value) throws Exception {
+        error(name);
+    }
+
+    public void putNew(String name, Object value) throws Exception {
+        error(name);
+    }
+
+    public Environment where(String name) throws Exception {
+        error(name); return null;
     }
 
     public void setOuter(Environment e) {
         outer = e;
     }
 
-    public Object get(String name) {
-        Object v = values.get(name);
-        if (v == null && outer != null) {
-            return outer.get(name);
-        } else {
-            return v;
-        }
-    }
-
-    public void putNew(String name, Object value) {
-        values.put(name, value);
-    }
-
-    public void put(String name, Object value) {
-        Environment e = where(name);
-        if (e == null) {
-            e = this;
-        }
-        e.putNew(name, value);
-    }
-
-    public Environment where(String name) {
-        if (values.get(name) != null) {
-            return this;
-        } else if (outer == null) {
-            return null;
-        } else {
-            return outer.where(name);
-        }
+    private void error(String name) throws Exception {
+        throw new Exception();
     }
 }
