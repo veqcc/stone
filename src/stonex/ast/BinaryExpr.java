@@ -1,11 +1,11 @@
 package stonex.ast;
-import stonex.Env;
-import stonex.Environment;
-import stonex.StoneObject;
-import stonex.Symbols;
+import stonex.*;
 import java.util.List;
 
 public class BinaryExpr extends ASTList {
+    private ClassInfo classInfo = null;
+    private int index;
+
     public BinaryExpr(List<ASTree> c) {
         super(c);
     }
@@ -111,12 +111,16 @@ public class BinaryExpr extends ASTList {
     }
 
     private Object setField(StoneObject obj, Dot expr, Object rvalue) throws Exception {
-        String name = expr.name();
-        try {
-            obj.write(name, rvalue);
-            return rvalue;
-        } catch (Exception e) {
-            throw e;
+        if (obj.classInfo() != classInfo) {
+            String member = expr.name();
+            classInfo = obj.classInfo();
+            Integer i = classInfo.fieldIndex(member);
+            if (i == null) {
+                throw new Exception();
+            }
+            index = i;
         }
+        obj.write(index, rvalue);
+        return rvalue;
     }
 }

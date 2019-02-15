@@ -7,6 +7,10 @@ import stonex.StoneObject;
 import java.util.List;
 
 public class Dot extends Postfix {
+    private ClassInfo classInfo = null;
+    private boolean isField;
+    private int index;
+
     public Dot(List<ASTree> c) {
         super(c);
     }
@@ -30,13 +34,41 @@ public class Dot extends Postfix {
                 initObject(ci, so, e);
                 return so;
             }
-        } else if (value instanceof StoneObject) {
-            try {
-                return ((StoneObject)value).read(member);
-            } catch (Exception e) {
-                throw new Exception();
+        }
+
+        if (value instanceof StoneObject) {
+            StoneObject target = (StoneObject)value;
+            if (target.classInfo() != classInfo) {
+                updateCache(target);
+            }
+            if (isField) {
+                return target.read(index);
+            } else {
+                return target.method(index);
             }
         }
+
+        throw new Exception();
+    }
+
+    private void updateCache(StoneObject target) throws Exception {
+        String member = name();
+        classInfo = target.classInfo();
+
+        Integer i = classInfo.fieldIndex(member);
+        if (i != null) {
+            isField = true;
+            index = i;
+            return;
+        }
+
+        i = classInfo.methodIndex(member);
+        if (i != null) {
+            isField = false;
+            index = i;
+            return;
+        }
+
         throw new Exception();
     }
 
