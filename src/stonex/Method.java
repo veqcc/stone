@@ -6,7 +6,7 @@ import stonex.ast.ParameterList;
 public class Method extends Function {
     StoneObject self;
 
-    public Method(ParameterList parameters, BlockStmnt body, Environment env, int size, StoneObject slef) {
+    public Method(ParameterList parameters, BlockStmnt body, Environment env, int size, StoneObject self) {
         super(parameters, body, env, size);
         this.self = self;
     }

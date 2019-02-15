@@ -13,7 +13,9 @@ class Pos3D extends Position {
 }
 
 p = Position.new
+print "hello"
 p.move(3,4)
+print "world"
 p.x = 10
 print "p.x + p.y = " + ( p.x + p.y )
 

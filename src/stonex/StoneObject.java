@@ -36,6 +36,7 @@ public class StoneObject {
     }
 
     public void write(String name, Object value) throws Exception {
+        System.out.println("ここ？");
         Integer i = classinfo.fieldIndex(name);
         if (i == null) {
             throw new Exception();

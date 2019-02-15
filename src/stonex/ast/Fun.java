@@ -34,7 +34,7 @@ public class Fun extends ASTList {
     }
 
     public static int lookup(Symbols syms, ParameterList params, BlockStmnt body) throws Exception {
-        Symbols newSyms = new Symbols();
+        Symbols newSyms = new Symbols(syms);
         params.lookup(newSyms);
         body.lookup(newSyms);
         return newSyms.size();
